@@ -2,7 +2,7 @@
 
 Välkommen till min aktie app!
 
-##Förkrav
+## Förkrav
 1. Installera Node.js ifall du inte har det installerat
 2. Öppna VS-code och ta ner projektet **git clone https://github.com/tobiaswes/AktieApp.git**
 3. Kör **npm install expo** i terminalen
@@ -11,6 +11,8 @@ Välkommen till min aktie app!
 6. Skapa filen **.env** i projektmappen
 7. Lägg till den publika variabeln **API_KEY=din-api-nyckel** i .env-filen
 8. När du startar appen för första gången, kör **npx expo start --clear** för att den skall använda sig av ändringarna i filen .env
+
+# Kravspecifikation
 
 ## Ska-krav
 - En startsida med en sökfunktion för att söka efter en aktie ([API-dokumentation](https://finnhub.io/docs/api/symbol-search))
