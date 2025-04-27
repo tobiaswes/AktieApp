@@ -2,8 +2,17 @@
 
 Välkommen till min aktie app!
 
+##Förkrav
+1. Installera Node.js ifall du inte har det installerat
+2. Öppna VS-code och ta ner projektet **git clone https://github.com/tobiaswes/AktieApp.git**
+3. Kör **npm install expo** i terminalen
+4. Skapa en API-nyckel på Finnhubs hemsida: [https://finnhub.io/](https://finnhub.io/)
+5. Kör **npm install react-native-dotenv**
+6. Skapa filen **.env** i projektmappen
+7. Lägg till den publika variabeln **API_KEY=din-api-nyckel** i .env-filen
+8. När du startar appen för första gången, kör **npx expo start --clear** för att den skall använda sig av ändringarna i filen .env
+
 ## Ska-krav
-- Skapa en API-nyckel från [Finnhub.io](https://finnhub.io)
 - En startsida med en sökfunktion för att söka efter en aktie ([API-dokumentation](https://finnhub.io/docs/api/symbol-search))
 - Startsidan visar sökresultatet i en `FlatList`
 - En detaljsida för att visa detaljer om en aktie, t.ex:
