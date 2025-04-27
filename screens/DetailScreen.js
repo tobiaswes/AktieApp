@@ -4,7 +4,7 @@ import { View, Text } from 'react-native';
 export default function DetailScreen() {
   return (
     <View>
-      <Text>Detta är detaljsidan</Text>
+      <Text>Detaljsidan</Text>
     </View>
   );
 }
