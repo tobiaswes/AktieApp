@@ -76,10 +76,10 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     padding: 10,
     borderRadius: 5,
-    marginBottom: 10,
+    marginBottom: 6,
   },
   item: {
-    padding: 15,
+    padding: 5,
     borderBottomWidth: 1,
     borderBottomColor: 'black',
   },
