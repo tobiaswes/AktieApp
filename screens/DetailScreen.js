@@ -18,10 +18,10 @@ export default function DetailScreen({ route }) {
         setStockDetails(quoteData);
 
         const statusRes = await fetch(
-          `https://finnhub.io/api/v1/stock/market-status?token=${API_KEY}`
+          `https://finnhub.io/api/v1/stock/market-status?exchange=US&token=${API_KEY}`
         );
         const statusData = await statusRes.json();
-        setMarketOpen(statusData.market === 'open');
+        setMarketOpen(statusData.isOpen);
       } catch (error) {
         console.error('Fel vid hämtning:', error);
       } finally {
