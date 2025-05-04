@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { API_KEY } from '@env';
 
-export default function HomeScreen({ navigation }) {
+export default function SearchScreen({ navigation }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,7 +37,10 @@ export default function HomeScreen({ navigation }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => navigation.navigate('Details', { symbol: item.symbol })}
+      onPress={() => navigation.navigate('Details', {
+        symbol: item.symbol,
+        name: item.description,
+      })}
     >
       <Text style={styles.symbol}>{item.symbol}</Text>
       <Text>{item.description}</Text>

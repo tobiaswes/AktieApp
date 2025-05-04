@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { API_KEY } from '@env';
 
 export default function DetailScreen({ route }) {
-  const { symbol } = route.params;
+  const { symbol, name } = route.params;
   const [stockDetails, setStockDetails] = useState(null);
   const [marketOpen, setMarketOpen] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +52,7 @@ export default function DetailScreen({ route }) {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
+        <Text style={styles.name}>{name}</Text>
         <Text style={styles.symbol}>{symbol}</Text>
 
         {marketOpen !== null && (
@@ -58,11 +60,11 @@ export default function DetailScreen({ route }) {
             <Text style={{ color: marketOpen ? 'green' : 'red' }}>
               {marketOpen ? 'Marknaden är öppen' : 'Marknaden är stängd'}
             </Text>
-            <Text>(Öppettid 16.30–23.00)</Text>
+            <Text>(Öppettid 16.30–23.00 mån-fre)</Text>
           </View>
         )}
 
-        <Text style={styles.price}>💲 {stockDetails.c} USD</Text>
+        <Text style={styles.price}>{stockDetails.c} USD</Text>
 
         <View style={styles.row}>
           <Text style={styles.label}>Högsta idag:</Text>
@@ -80,6 +82,24 @@ export default function DetailScreen({ route }) {
           <Text style={styles.label}>Föregående stängning:</Text>
           <Text>{stockDetails.pc} USD</Text>
         </View>
+        <View style={styles.quantityContainer}>
+          <Text style={styles.label}>Antal:</Text>
+          <View style={styles.counterRow}>
+            <TouchableOpacity onPress={() => setQuantity(q => Math.max(1, q - 1))} style={styles.counterButton}>
+              <Text style={styles.counterText}>−</Text>
+            </TouchableOpacity>
+            <Text style={styles.quantityText}>{quantity}</Text>
+            <TouchableOpacity onPress={() => setQuantity(q => q + 1)} style={styles.counterButton}>
+              <Text style={styles.counterText}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <TouchableOpacity style={styles.buyButton} onPress={() => {
+          const total = (quantity * stockDetails.c).toFixed(2);
+          alert(`Du köpte ${quantity} aktier i ${name} för totalt ${total} USD`);
+          }}>
+          <Text style={styles.buyButtonText}>Köp</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -101,8 +121,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
+  name: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#007AFF',
+    marginBottom: 4,
+  },
   symbol: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#007AFF',
     marginBottom: 4,
@@ -135,5 +161,43 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     fontSize: 16,
+  },
+  buyButton: {
+    backgroundColor: '#28a745',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buyButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  quantityContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  counterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  counterButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    marginHorizontal: 10,
+  },
+  counterText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  quantityText: {
+    fontSize: 18,
+    fontWeight: '500',
   },
 });
