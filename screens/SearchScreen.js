@@ -37,7 +37,7 @@ export default function SearchScreen({ navigation }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => navigation.navigate('Details', {
+      onPress={() => navigation.navigate('Köp aktie', {
         symbol: item.symbol,
         name: item.description,
       })}

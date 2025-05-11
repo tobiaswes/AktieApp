@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { API_KEY } from '@env';
+import { getCapital, setCapital as storeCapital, addStockPurchase } from '../storage/DataStorage';
 
 export default function DetailScreen({ route }) {
   const { symbol, name } = route.params;
@@ -8,6 +9,7 @@ export default function DetailScreen({ route }) {
   const [marketOpen, setMarketOpen] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [capital,setCapital] = useState(0);  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,6 +25,13 @@ export default function DetailScreen({ route }) {
         );
         const statusData = await statusRes.json();
         setMarketOpen(statusData.isOpen);
+
+        // Hämta kapital från AsyncStorage
+        const storedCapital = await getCapital();
+        if (storedCapital !== null) {
+          setCapital(storedCapital);
+        }
+
       } catch (error) {
         console.error('Fel vid hämtning:', error);
       } finally {
@@ -48,6 +57,36 @@ export default function DetailScreen({ route }) {
       </View>
     );
   }
+
+  const handleBuy = async () => {
+  try {
+    const total = quantity * stockDetails.c;
+    if (total > capital) {
+      alert('Du har inte tillräckligt med kapital för detta köp.');
+      return;
+    }
+
+    const newCapital = capital - total;
+    await storeCapital(newCapital.toFixed(2));
+    setCapital(newCapital);
+
+    const purchase = {
+      symbol,
+      name,
+      price: stockDetails.c,
+      quantity,
+      total,
+      timestamp: new Date().toISOString(), // valfritt
+    };
+
+    await addStockPurchase(purchase);
+
+    alert(`Du köpte ${quantity} aktier i ${name} för totalt ${total.toFixed(2)} USD.`);
+  } catch (error) {
+    console.error('Fel vid köp:', error);
+    alert('Ett fel uppstod vid köp.');
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -82,6 +121,7 @@ export default function DetailScreen({ route }) {
           <Text style={styles.label}>Föregående stängning:</Text>
           <Text>{stockDetails.pc} USD</Text>
         </View>
+
         <View style={styles.quantityContainer}>
           <Text style={styles.label}>Antal:</Text>
           <View style={styles.counterRow}>
@@ -94,10 +134,17 @@ export default function DetailScreen({ route }) {
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity style={styles.buyButton} onPress={() => {
-          const total = (quantity * stockDetails.c).toFixed(2);
-          alert(`Du köpte ${quantity} aktier i ${name} för totalt ${total} USD`);
-          }}>
+
+        {/* Visa totalvärde */}
+        <Text style={{ marginTop: 10 }}>
+          Totalt värde: {(quantity * stockDetails.c).toFixed(2)} USD
+        </Text>
+
+        <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>
+          Tillgängligt kapital: {capital.toFixed(2)} USD
+        </Text>
+
+        <TouchableOpacity style={styles.buyButton} onPress={handleBuy}>
           <Text style={styles.buyButtonText}>Köp</Text>
         </TouchableOpacity>
       </View>
