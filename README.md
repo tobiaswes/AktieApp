@@ -1,6 +1,10 @@
 # Aktieapp
 
-Välkommen till min aktie app!
+Välkommen till min aktieapp för "demo trading" (låtsashandel)!
+
+### Avgränsning
+1. Den här aktieappen är begränsad till aktiemarknaden i Usa
+2. När man köper och säljer aktier så tar den **inte** några avgifter(Courtage) i beaktande.
 
 ## Förkrav
 1. Installera Node.js ifall du inte har det installerat
@@ -10,7 +14,7 @@ Välkommen till min aktie app!
 5. Kör **npm install react-native-dotenv**
 6. Skapa filen **.env** i projektmappen
 7. Lägg till den publika variabeln **API_KEY=din-api-nyckel** i .env-filen
-8. När du startar appen för första gången, kör **npx expo start --clear** för att den skall använda sig av ändringarna i filen .env
+8. **Vikitgt!** När du startar appen för första gången, kör **npx expo start --clear** för att den skall importera och använda filen .env **Vikitgt!**
 
 # Kravspecifikation
 
@@ -35,6 +39,7 @@ Välkommen till min aktie app!
   - Totalt värde
   - En knapp för att **sälja aktien**
 - En knapp på startsidan för att **låna mer pengar** om kapitalet tar slut
+- Lagring av data
 
 ## Trevligt-att-ha-krav
 - Scoreboard eller statistik över användarens investeringar
