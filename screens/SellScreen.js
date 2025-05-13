@@ -62,7 +62,8 @@ export default function SellScreen({ route }) {
       }
 
       // Uppdatera kapitalet genom att addera försäljningssumman till kapitalet
-      const saleAmount = item.price * sellAmount;  
+      const salePrice = item.latestPrice || item.price;
+      const saleAmount = salePrice * sellAmount;
       const newCapital = capital + saleAmount;
       await setCapital(newCapital);
 
@@ -83,8 +84,14 @@ export default function SellScreen({ route }) {
         <View style={styles.card}>
           <Text style={styles.symbol}>{item.symbol} ({item.name})</Text>
           <Text style={styles.detail}>Antal: {item.quantity}</Text>
-          <Text style={styles.detail}>Snittpris: {item.price.toFixed(2)} USD</Text>
-          <Text style={styles.detail}>Totalt: {(item.quantity * item.price).toFixed(2)} USD</Text>
+          {item.latestPrice !== undefined ? (
+            <Text style={styles.detail}>Nuvarande pris: {item.latestPrice.toFixed(2)} USD</Text>
+          ) : (
+            <Text style={styles.detail}>Nuvarande pris: —</Text>
+          )}
+          <Text style={styles.sellvalue}>
+            Försäljningsvärde: {(sellAmount * (item.latestPrice ?? item.price)).toFixed(2)} USD
+          </Text>
         </View>
       )}
 
@@ -154,6 +161,11 @@ const styles = StyleSheet.create({
   counterValue: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  sellvalue: {
+    fontSize: 16,
+    marginBottom: 5,
+    fontWeight: 'bold', 
   },
 });
 

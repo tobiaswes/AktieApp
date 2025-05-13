@@ -39,10 +39,32 @@ export const getPurchases = async () => {
 };
 
 // Lägg till aktieköp i portföljen
-export const addStockPurchase = async (purchase) => {
+export const addStockPurchase = async (newPurchase) => {
   const currentPurchases = await getPurchases();
-  const updatedPurchases = [...currentPurchases, purchase];
-  await AsyncStorage.setItem('purchases', JSON.stringify(updatedPurchases));
+
+  const existingIndex = currentPurchases.findIndex(
+    (purchase) => purchase.symbol === newPurchase.symbol
+  );
+
+  if (existingIndex !== -1) {
+    // Uppdatera befintligt köp
+    const existingPurchase = currentPurchases[existingIndex];
+    const updatedQuantity = existingPurchase.quantity + newPurchase.quantity;
+    const updatedTotal = existingPurchase.total + newPurchase.total;
+
+    currentPurchases[existingIndex] = {
+      ...existingPurchase,
+      quantity: updatedQuantity,
+      total: updatedTotal,
+      price: newPurchase.price, // ev. senaste pris
+      timestamp: new Date().toISOString(), // uppdatera tid
+    };
+  } else {
+    // Lägg till nytt köp
+    currentPurchases.push(newPurchase);
+  }
+
+  await AsyncStorage.setItem('purchases', JSON.stringify(currentPurchases));
 };
 
 // Uppdatera aktieköp när aktier säljs

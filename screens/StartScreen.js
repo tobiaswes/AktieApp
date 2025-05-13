@@ -36,6 +36,7 @@ export default function StartScreen({ navigation }) {
   );
 
   useEffect(() => {
+    updatePrices(); 
     const interval = setInterval(() => {
       updatePrices(); 
     }, 30000);
@@ -108,8 +109,9 @@ export default function StartScreen({ navigation }) {
   const groupedList = Object.values(groupedPurchases);
 
   const totalValue = groupedList.reduce((total, item) => {
-    return total + (item.price * item.quantity); 
-  }, 0);
+  const priceToUse = item.latestPrice || item.price;
+  return total + (priceToUse * item.quantity);
+}, 0);
 
   const renderItem = ({ item }) => (
   <TouchableOpacity
@@ -119,6 +121,9 @@ export default function StartScreen({ navigation }) {
     <Text style={styles.symbol}>{item.symbol} ({item.name})</Text>
     <Text>Köpt {item.quantity} st för totalt {item.total.toFixed(2)} USD</Text>
     <Text>Snittpris/st: {item.price.toFixed(2)} USD</Text>
+    {item.latestPrice && (
+      <Text>Nuvarande pris: {item.latestPrice.toFixed(2)} USD</Text>
+    )}
   </TouchableOpacity>
 );
 
