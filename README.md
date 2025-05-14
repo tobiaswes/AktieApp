@@ -5,6 +5,7 @@ Välkommen till min aktieapp för "demo trading" (låtsashandel)!
 ## Avgränsning
 - Appen är begränsad till den aktiemarknaden i USA **(Öppettider: 16:30–23:00, måndag–fredag)**. Man kan köpa aktier även när marknaden är stängd, men priserna uppdateras först när marknaden öppnar.
 - Vid köp och försäljning av aktier tas **inte** avgifter (courtage) eller utdelningar (dividender) i beaktande.
+- Appen använder API:er från Finnhub, som har en begränsning på 60 API-anrop per minut i gratisversionen.
 
 
 ## Förkrav 
