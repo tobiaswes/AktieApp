@@ -3,11 +3,11 @@
 Välkommen till min aktieapp för "demo trading" (låtsashandel)!
 
 ## Avgränsning
-- Appen är begränsad till den aktiemarknaden i USA (Öppettider: 16:30–23:00, måndag–fredag). Man kan köpa aktier även när marknaden är stängd, men priserna uppdateras först när marknaden öppnar.
+- Appen är begränsad till den aktiemarknaden i USA **(Öppettider: 16:30–23:00, måndag–fredag)**. Man kan köpa aktier även när marknaden är stängd, men priserna uppdateras först när marknaden öppnar.
 - Vid köp och försäljning av aktier tas **inte** avgifter (courtage) eller utdelningar (dividender) i beaktande.
 
 
-## Förkrav
+## Förkrav 
 1. Installera Node.js ifall du inte har det installerat
 2. Öppna VS-code och ta ner projektet **git clone https://github.com/tobiaswes/AktieApp.git**
 3. Kör **npm install expo** i terminalen
@@ -19,7 +19,7 @@ Välkommen till min aktieapp för "demo trading" (låtsashandel)!
 
 # Kravspecifikation
 
-## Ska-krav
+## Ska-krav <span style="color:green">Klar</span>
 - En sida med en sökfunktion för att söka efter en aktie ([API-dokumentation](https://finnhub.io/docs/api/symbol-search))
 - Söksidan visar sökresultatet i en `FlatList`
 - En detaljsida för att visa detaljer om en aktie, t.ex:
@@ -27,9 +27,9 @@ Välkommen till min aktieapp för "demo trading" (låtsashandel)!
   - Högsta pris
   - Lägsta pris ([API-dokumentation](https://finnhub.io/docs/api/quote))
 
-## Bör-krav
+## Bör-krav <span style="color:green">Klar</span>
 - Skapa "demo trading" (låtsashandel)
-- Ge användarens konto ett startkapital på **10 000 euro**
+- Ge användarens konto ett startkapital på **10 000 dollar**
 - Lägg till en knapp på detaljsidan för att **köpa en aktie**
 - Ett alternativ att köpa aktier, där man kan ange:
   - Antal aktier
@@ -39,8 +39,8 @@ Välkommen till min aktieapp för "demo trading" (låtsashandel)!
   - Antal aktier
   - Totalt värde
   - En knapp för att **sälja aktien**
-- En knapp på startsidan för att **låna mer pengar** om kapitalet tar slut
+- En knapp på startsidan för att **återställa** om kapitalet tar slut
 - Lagring av data
 
-## Trevligt-att-ha-krav
+## Trevligt-att-ha-krav <span style="color:red">Inte implementerat</span>
 - Scoreboard eller statistik över användarens investeringar
