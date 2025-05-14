@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity, Alert } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native'; // Importera useFocusEffect
-import { getPurchases, updateStockPurchase, removeStockPurchase, getCapital, setCapital } from '../storage/DataStorage'; // Importera lagringsfunktioner
+import { useFocusEffect } from '@react-navigation/native';
+import { getPurchases, getCapital} from '../storage/DataStorage';
+import { handleSell } from '../component/HandleSell';
 
 export default function SellScreen({ route }) {
   const { item: initialItem } = route.params; 
@@ -46,38 +47,6 @@ export default function SellScreen({ route }) {
     if (sellAmount > 1) setSellAmount(sellAmount - 1);
   };
 
-  // Funktion för att hantera försäljning
-  const handleSell = async () => {
-    try {
-      // Uppdatera lagret med den nya mängden aktier eller ta bort aktien om mängden blir 0
-      await updateStockPurchase(item.symbol, sellAmount);
-
-      // Om mängden aktier blir 0 efter försäljning, ta bort aktien från lagret
-      if (item.quantity - sellAmount <= 0) {
-        await removeStockPurchase(item.symbol);
-        setItem(null);  // Om aktien är helt såld, ta bort den från state
-      } else {
-        // Uppdatera item's quantity om aktien fortfarande finns kvar
-        setItem({ ...item, quantity: item.quantity - sellAmount });
-      }
-
-      // Uppdatera kapitalet genom att addera försäljningssumman till kapitalet
-      const salePrice = item.latestPrice || item.price;
-      const saleAmount = salePrice * sellAmount;
-      const newCapital = capital + saleAmount;
-      await setCapital(newCapital);
-
-      // Uppdatera lokalt kapital och aktieköp
-      setCapitalState(newCapital);
-      setPurchases(await getPurchases());  // Uppdatera aktieköp efter försäljning
-
-      Alert.alert('Försäljning lyckades', `Du har sålt ${sellAmount} aktie${sellAmount > 1 ? 'r' : ''} av ${item.symbol}`);
-    } catch (error) {
-      console.error('Fel vid försäljning:', error);
-      Alert.alert('Något gick fel', 'Försäljningen misslyckades, försök igen senare.');
-    }
-  };
-
   return (
     <View style={styles.container}>
       {item && (
@@ -106,7 +75,20 @@ export default function SellScreen({ route }) {
         </TouchableOpacity>
       </View>
 
-      <Button title={`Sälj ${sellAmount} aktie${sellAmount > 1 ? 'r' : ''}`} onPress={handleSell} color="red" />
+      <Button
+        title={`Sälj ${sellAmount} aktie${sellAmount > 1 ? 'r' : ''}`}
+        onPress={() =>
+          handleSell({
+            item,
+            sellAmount,
+            capital,
+            setItem,
+            setCapitalState,
+            setPurchases,
+          })
+        }
+        color="red"
+      />
     </View>
   );
 }
@@ -131,6 +113,7 @@ const styles = StyleSheet.create({
   symbol: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#007AFF',
     marginBottom: 10,
   },
   detail: {

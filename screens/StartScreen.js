@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { API_KEY } from '@env';
 import { TouchableOpacity, View, Text, Button, StyleSheet, FlatList, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { getCapital, setCapital, reset, getPurchases } from '../storage/DataStorage';
-import { fetchLatestPrice } from '../component/GetLatestPrice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { updatePrices } from '../component/UpdatePrice';
 
 export default function StartScreen({ navigation }) {
   const [capital, setCapitalState] = useState(0);
   const [purchases, setPurchases] = useState([]);
   const [error, setError] = useState(null);
+  const [marketOpen, setMarketOpen] = useState(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -36,12 +37,23 @@ export default function StartScreen({ navigation }) {
   );
 
   useEffect(() => {
-    updatePrices(); 
-    const interval = setInterval(() => {
-      updatePrices(); 
-    }, 30000);
+    updatePrices(setPurchases);
+    const interval = setInterval(() => updatePrices(setPurchases), 20000);
+    return () => clearInterval(interval);
+  }, []);
 
-    return () => clearInterval(interval); 
+  useEffect(() => {
+    const fetchMarketStatus = async () => {
+      try {
+        const response = await fetch(`https://finnhub.io/api/v1/stock/market-status?exchange=US&token=${API_KEY}`);
+        const data = await response.json();
+        setMarketOpen(data.isOpen);
+      } catch (error) {
+        console.error('Kunde inte hämta marknadsstatus:', error);
+      }
+    };
+
+    fetchMarketStatus();
   }, []);
 
   const handleReset = () => {
@@ -73,27 +85,7 @@ export default function StartScreen({ navigation }) {
     );
   };
 
-  const updatePrices = async () => {
-  try {
-    const oldPurchases = await getPurchases();
-
-    const updated = await Promise.all(
-      oldPurchases.map(async (item) => {
-        const latestPrice = await fetchLatestPrice(item.symbol);
-        return latestPrice
-          ? { ...item, latestPrice }
-          : item; 
-      })
-    );
-
-    await AsyncStorage.setItem('purchases', JSON.stringify(updated));
-    setPurchases(updated);
-  } catch (error) {
-    console.error('Fel vid uppdatering av priser:', error);
-  }
-};
-
-  // Gruppera köp baserat på symbol
+  //Grupperar köp
   const groupedPurchases = purchases.reduce((acc, item) => {
     const key = item.symbol;
     if (!acc[key]) {
@@ -109,27 +101,38 @@ export default function StartScreen({ navigation }) {
   const groupedList = Object.values(groupedPurchases);
 
   const totalValue = groupedList.reduce((total, item) => {
-  const priceToUse = item.latestPrice || item.price;
-  return total + (priceToUse * item.quantity);
-}, 0);
+    if (item.latestPrice === undefined || isNaN(item.latestPrice)) return total;
+    return total + (item.latestPrice * item.quantity);
+  }, 0);
 
   const renderItem = ({ item }) => (
-  <TouchableOpacity
-    style={styles.purchaseItem}
-    onPress={() => navigation.navigate('Sälj aktie', { item })}
-  >
-    <Text style={styles.symbol}>{item.symbol} ({item.name})</Text>
-    <Text>Köpt {item.quantity} st för totalt {item.total.toFixed(2)} USD</Text>
-    <Text>Snittpris/st: {item.price.toFixed(2)} USD</Text>
-    {item.latestPrice && (
-      <Text>Nuvarande pris: {item.latestPrice.toFixed(2)} USD</Text>
-    )}
-  </TouchableOpacity>
-);
+    <TouchableOpacity
+      style={styles.purchaseItem}
+      onPress={() => navigation.navigate('Sälj aktie', { item })}
+    >
+      <Text style={styles.symbol}>{item.symbol} ({item.name})</Text>
+      {item.latestPrice !== undefined ? (
+        <Text>
+          {item.quantity} st för totalt {(item.latestPrice * item.quantity).toFixed(2)} USD
+        </Text>
+      ) : (
+        <Text>Laddar in...</Text>
+      )}
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Överblick</Text>
+      <View style={styles.marketStatus}>
+        <Text style={[styles.marketStatusText, { color: marketOpen ? 'green' : 'red' }]}>
+          {marketOpen ? 'Marknaden är öppen' : 'Marknaden är stängd'}
+        </Text>
+        <Text style={styles.marketStatusText}>
+          (Öppettid 16.30–23.00 mån–fre)
+        </Text>
+      </View>
+
       {error ? (
         <Text style={styles.error}>{error}</Text>
       ) : (
@@ -138,6 +141,9 @@ export default function StartScreen({ navigation }) {
       <Text style={styles.totalStockValue}>Totalt aktie värde: {totalValue.toFixed(2)} USD</Text>
       <Text style={styles.portfolio}>Portföljens värde: {(capital + totalValue).toFixed(2)} USD</Text>
       <Text style={styles.sectionTitle}>Köpta aktier:</Text>
+      <Text style={styles.stockLimit}>
+        {groupedList.length} / 6 
+      </Text>
       {groupedList.length === 0 ? (
         <Text style={styles.noData}>Inga köp.</Text>
       ) : (
@@ -163,17 +169,17 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
+    fontWeight: 'bold',
     fontSize: 24,
-    marginTop: 40,
+    marginTop: 10,
   },
   capital: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    marginTop: 12,
+    fontSize: 16,
     color: 'blue',
   },
   totalStockValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
     color: 'green',
   },
   error: {
@@ -220,8 +226,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   portfolio: {
-    fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 18,
     marginTop: 2,
-  }
+  },
+  stockLimit: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  marketStatus: {
+    marginBottom: 10,
+    fontWeight: '500',
+  },
+  marketStatusText: {
+  fontSize: 14, 
+  fontWeight: '500',
+},
 });

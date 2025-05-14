@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { API_KEY } from '@env';
-import { getCapital, setCapital as storeCapital, addStockPurchase } from '../storage/DataStorage';
+import { handleBuy } from '../component/HandleBuy';
+import { getCapital } from '../storage/DataStorage';
+
 
 export default function DetailScreen({ route }) {
   const { symbol, name } = route.params;
   const [stockDetails, setStockDetails] = useState(null);
-  const [marketOpen, setMarketOpen] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [capital,setCapital] = useState(0);  
@@ -19,12 +20,6 @@ export default function DetailScreen({ route }) {
         );
         const quoteData = await quoteRes.json();
         setStockDetails(quoteData);
-
-        const statusRes = await fetch(
-          `https://finnhub.io/api/v1/stock/market-status?exchange=US&token=${API_KEY}`
-        );
-        const statusData = await statusRes.json();
-        setMarketOpen(statusData.isOpen);
 
         // Hämta kapital från AsyncStorage
         const storedCapital = await getCapital();
@@ -58,50 +53,11 @@ export default function DetailScreen({ route }) {
     );
   }
 
-  const handleBuy = async () => {
-  try {
-    const total = quantity * stockDetails.c;
-    if (total > capital) {
-      alert('Du har inte tillräckligt med kapital för detta köp.');
-      return;
-    }
-
-    const newCapital = capital - total;
-    await storeCapital(newCapital.toFixed(2));
-    setCapital(newCapital);
-
-    const purchase = {
-      symbol,
-      name,
-      price: stockDetails.c,
-      quantity,
-      total,
-      timestamp: new Date().toISOString(), // valfritt
-    };
-
-    await addStockPurchase(purchase);
-
-    alert(`Du köpte ${quantity} aktier i ${name} för totalt ${total.toFixed(2)} USD.`);
-  } catch (error) {
-    console.error('Fel vid köp:', error);
-    alert('Ett fel uppstod vid köp.');
-  }
-};
-
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.symbol}>{symbol}</Text>
-
-        {marketOpen !== null && (
-          <View style={styles.marketStatus}>
-            <Text style={{ color: marketOpen ? 'green' : 'red' }}>
-              {marketOpen ? 'Marknaden är öppen' : 'Marknaden är stängd'}
-            </Text>
-            <Text>(Öppettid 16.30–23.00 mån-fre)</Text>
-          </View>
-        )}
 
         <Text style={styles.price}>{stockDetails.c} USD</Text>
 
@@ -139,12 +95,10 @@ export default function DetailScreen({ route }) {
         <Text style={{ marginTop: 10 }}>
           Totalt värde: {(quantity * stockDetails.c).toFixed(2)} USD
         </Text>
-
         <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>
           Tillgängligt kapital: {capital.toFixed(2)} USD
         </Text>
-
-        <TouchableOpacity style={styles.buyButton} onPress={handleBuy}>
+        <TouchableOpacity style={styles.buyButton} onPress={() => handleBuy({ symbol, name, stockDetails, quantity, capital, setCapital })}>
           <Text style={styles.buyButtonText}>Köp</Text>
         </TouchableOpacity>
       </View>
@@ -179,11 +133,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#007AFF',
     marginBottom: 4,
-  },
-  marketStatus: {
-    fontSize: 16,
-    marginBottom: 10,
-    fontWeight: '500',
   },
   price: {
     fontSize: 22,
