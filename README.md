@@ -2,9 +2,10 @@
 
 Välkommen till min aktieapp för "demo trading" (låtsashandel)!
 
-### Avgränsning
-1. Den här aktieappen är begränsad till aktiemarknaden i Usa
-2. När man köper och säljer aktier så tar den **inte** några avgifter(Courtage) i beaktande.
+## Avgränsning
+- Appen är begränsad till den aktiemarknaden i USA (Öppettider: 16:30–23:00, måndag–fredag). Man kan köpa aktier även när marknaden är stängd, men priserna uppdateras först när marknaden öppnar.
+- Vid köp och försäljning av aktier tas **inte** avgifter (courtage) eller utdelningar (dividender) i beaktande.
+
 
 ## Förkrav
 1. Installera Node.js ifall du inte har det installerat
@@ -14,7 +15,7 @@ Välkommen till min aktieapp för "demo trading" (låtsashandel)!
 5. Kör **npm install react-native-dotenv**
 6. Skapa filen **.env** i projektmappen
 7. Lägg till den publika variabeln **API_KEY=din-api-nyckel** i .env-filen
-8. **Vikitgt!** När du startar appen för första gången, kör **npx expo start --clear** för att den skall importera och använda filen .env **Vikitgt!**
+8. **Viktigt!** När du startar appen för första gången, kör **npx expo start --clear** för att den skall importera och använda filen .env **Viktigt!**
 
 # Kravspecifikation
 
