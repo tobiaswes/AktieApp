@@ -19,7 +19,7 @@ Välkommen till min aktieapp för "demo trading" (låtsashandel)!
 
 # Kravspecifikation
 
-## Ska-krav <span style="color:green">Klar</span>
+## Ska-krav ✅ **Klart**
 - En sida med en sökfunktion för att söka efter en aktie ([API-dokumentation](https://finnhub.io/docs/api/symbol-search))
 - Söksidan visar sökresultatet i en `FlatList`
 - En detaljsida för att visa detaljer om en aktie, t.ex:
@@ -27,7 +27,7 @@ Välkommen till min aktieapp för "demo trading" (låtsashandel)!
   - Högsta pris
   - Lägsta pris ([API-dokumentation](https://finnhub.io/docs/api/quote))
 
-## Bör-krav <span style="color:green">Klar</span>
+## Bör-krav ✅ **Klart**
 - Skapa "demo trading" (låtsashandel)
 - Ge användarens konto ett startkapital på **10 000 dollar**
 - Lägg till en knapp på detaljsidan för att **köpa en aktie**
@@ -42,5 +42,5 @@ Välkommen till min aktieapp för "demo trading" (låtsashandel)!
 - En knapp på startsidan för att **återställa** om kapitalet tar slut
 - Lagring av data
 
-## Trevligt-att-ha-krav <span style="color:red">Inte implementerat</span>
+## Trevligt-att-ha-krav ❌ **Inte implementerat**
 - Scoreboard eller statistik över användarens investeringar
