@@ -11,7 +11,6 @@ export const updatePrices = async (setPurchases) => {
         return latestPrice ? { ...item, latestPrice } : item;
       })
     );
-    console.log(updated);
     await AsyncStorage.setItem('purchases', JSON.stringify(updated));
     setPurchases(updated);
   } catch (error) {

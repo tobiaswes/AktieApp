@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   marketStatusText: {
-  fontSize: 14, 
+  fontSize: 16, 
   fontWeight: '500',
 },
 });

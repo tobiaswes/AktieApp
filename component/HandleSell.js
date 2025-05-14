@@ -2,6 +2,11 @@ import { Alert } from 'react-native';
 import { updateStockPurchase, removeStockPurchase, getPurchases, setCapital } from '../storage/DataStorage';
 
 export const handleSell = async ({ item, sellAmount, capital, setItem, setCapitalState, setPurchases }) => {
+  if (!item) {
+    Alert.alert('Ogiltig åtgärd', 'Finns ingen aktie att sälja.');
+    return;
+  }
+
   try {
     await updateStockPurchase(item.symbol, sellAmount);
 
